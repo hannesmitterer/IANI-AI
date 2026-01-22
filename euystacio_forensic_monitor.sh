@@ -204,6 +204,11 @@ analyze_auth_logs() {
             sort | uniq -c | sort -rn)
         
         while read -r count ip; do
+            # Skip empty lines
+            if [ -z "$count" ] || [ -z "$ip" ]; then
+                continue
+            fi
+            
             if [ "$count" -ge "$MAX_LOGIN_ATTEMPTS" ]; then
                 log_warning "Detected $count failed login attempts from IP: $ip"
                 suspicious_ips+=("$ip")
