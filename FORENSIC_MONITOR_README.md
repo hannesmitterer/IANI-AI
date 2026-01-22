@@ -25,9 +25,11 @@ This tool is part of the **Euystacio Framework** - a comprehensive security arch
 - **Cron Job Logging**: Separate log for scheduled executions
 
 ### ⚙️ Automated Execution
-- **Periodic Scanning**: Runs automatically every 432 minutes (7.2 hours)
+- **Periodic Scanning**: Runs automatically approximately every 7 hours (00:12, 07:12, 14:12, 21:12)
 - **Cron Integration**: Easy setup via automated installation script
 - **System-wide Availability**: Installed in `/usr/local/bin/` for easy access
+
+> **Note**: The original requirement was every 432 minutes (7.2 hours), but since cron doesn't support intervals that don't divide evenly into 60 minutes, the schedule is configured to run at specific times throughout the day for approximately the same frequency.
 
 ## Installation
 
@@ -109,14 +111,24 @@ SCAN_DURATION_MINUTES=30
 
 ### Cron Schedule
 
-The default schedule is every 432 minutes (7.2 hours). To modify:
+The default schedule runs approximately every 7 hours at specific times: **00:12, 07:12, 14:12, and 21:12** daily. This approximates the requested 432-minute (7.2 hour) interval.
+
+> **Why not exactly 432 minutes?** Cron only supports intervals that divide evenly into 60 minutes. Since 432 minutes equals 7 hours and 12 minutes, we use specific time-based scheduling instead.
+
+To modify the schedule:
 
 ```bash
 # Edit the crontab
 sudo crontab -e
 
-# Modify the interval (example: every 60 minutes)
-*/60 * * * * . /etc/euystacio_forensic_monitor.env && /usr/local/bin/euystacio_forensic_monitor.sh >> /var/log/euystacio_forensic_monitor_cron.log 2>&1
+# Current schedule (runs ~every 7 hours)
+12 0,7,14,21 * * * . /etc/euystacio_forensic_monitor.env && /usr/local/bin/euystacio_forensic_monitor.sh >> /var/log/euystacio_forensic_monitor_cron.log 2>&1
+
+# Example: Run every hour instead
+0 * * * * . /etc/euystacio_forensic_monitor.env && /usr/local/bin/euystacio_forensic_monitor.sh >> /var/log/euystacio_forensic_monitor_cron.log 2>&1
+
+# Example: Run every 2 hours
+0 */2 * * * . /etc/euystacio_forensic_monitor.env && /usr/local/bin/euystacio_forensic_monitor.sh >> /var/log/euystacio_forensic_monitor_cron.log 2>&1
 ```
 
 ## Usage
