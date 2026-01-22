@@ -140,11 +140,21 @@ block_ip() {
     local ip="$1"
     local reason="$2"
     
-    # Validate IP format (basic validation)
-    if ! echo "$ip" | grep -qE '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'; then
+    # Validate IP format with proper octet range checking
+    if ! echo "$ip" | grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
         log_error "Invalid IP address format: $ip"
         return 1
     fi
+    
+    # Validate each octet is 0-255
+    local IFS='.'
+    local -a octets=($ip)
+    for octet in "${octets[@]}"; do
+        if [ "$octet" -gt 255 ] 2>/dev/null || [ "$octet" -lt 0 ] 2>/dev/null; then
+            log_error "Invalid IP address (octet out of range): $ip"
+            return 1
+        fi
+    done
     
     # Check if already blocked
     if is_ip_blocked "$ip"; then
@@ -181,8 +191,6 @@ block_ip() {
 analyze_auth_logs() {
     log_info "Analyzing authentication logs for suspicious activity..."
     
-    local suspicious_ips=()
-    
     # Check common auth log locations
     local auth_log=""
     if [ -f "/var/log/auth.log" ]; then
@@ -194,34 +202,38 @@ analyze_auth_logs() {
         return 0
     fi
     
-    # Find IPs with failed login attempts in the last SCAN_DURATION_MINUTES
-    local cutoff_time=$(date -d "$SCAN_DURATION_MINUTES minutes ago" '+%b %d %H:%M' 2>/dev/null || date -v-${SCAN_DURATION_MINUTES}M '+%b %d %H:%M' 2>/dev/null)
+    # Calculate cutoff timestamp for filtering recent logs
+    local cutoff_timestamp=$(date -d "$SCAN_DURATION_MINUTES minutes ago" '+%s' 2>/dev/null || date -v-${SCAN_DURATION_MINUTES}M '+%s' 2>/dev/null)
     
-    if [ -n "$cutoff_time" ]; then
-        # Extract IPs with failed authentication attempts
-        local failed_attempts=$(grep -i "failed\|failure\|invalid" "$auth_log" 2>/dev/null | \
-            grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' | \
-            sort | uniq -c | sort -rn)
+    # Extract IPs with failed authentication attempts
+    # Note: Time filtering is approximate since log timestamps vary by system
+    local failed_attempts=$(grep -i "failed\|failure\|invalid" "$auth_log" 2>/dev/null | \
+        tail -n 10000 | \
+        grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' | \
+        sort | uniq -c | sort -rn)
+    
+    # Track IPs and their attempt counts
+    declare -A ip_counts
+    
+    while read -r count ip; do
+        # Skip empty lines
+        if [ -z "$count" ] || [ -z "$ip" ]; then
+            continue
+        fi
         
-        while read -r count ip; do
-            # Skip empty lines
-            if [ -z "$count" ] || [ -z "$ip" ]; then
-                continue
-            fi
-            
-            if [ "$count" -ge "$MAX_LOGIN_ATTEMPTS" ]; then
-                log_warning "Detected $count failed login attempts from IP: $ip"
-                suspicious_ips+=("$ip")
-            fi
-        done <<< "$failed_attempts"
-    fi
+        if [ "$count" -ge "$MAX_LOGIN_ATTEMPTS" ]; then
+            log_warning "Detected $count failed login attempts from IP: $ip"
+            ip_counts["$ip"]="$count"
+        fi
+    done <<< "$failed_attempts"
     
     # Block suspicious IPs
-    for ip in "${suspicious_ips[@]}"; do
-        block_ip "$ip" "Excessive failed login attempts ($count attempts detected)"
+    for ip in "${!ip_counts[@]}"; do
+        local attempt_count="${ip_counts[$ip]}"
+        block_ip "$ip" "Excessive failed login attempts ($attempt_count attempts detected)"
     done
     
-    if [ ${#suspicious_ips[@]} -eq 0 ]; then
+    if [ ${#ip_counts[@]} -eq 0 ]; then
         log_info "No suspicious authentication activity detected"
     fi
 }

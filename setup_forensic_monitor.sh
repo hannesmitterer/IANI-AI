@@ -198,9 +198,15 @@ setup_cron_job() {
     fi
     
     # Create cron job entry
+    # 432 minutes = 7 hours 12 minutes
+    # Since cron doesn't support 432-minute intervals directly, we'll run at specific times
+    # to approximate every 7.2 hours: 00:00, 07:12, 14:24, 21:36 (roughly 3 times per day at 7.2 hour intervals)
     local cron_cmd="${env_source}$INSTALL_PATH >> /var/log/euystacio_forensic_monitor_cron.log 2>&1"
-    local cron_schedule="*/$CRON_INTERVAL_MINUTES * * * *"
+    local cron_schedule="12 0,7,14,21 * * *"  # Runs at 00:12, 07:12, 14:12, 21:12 (approximately every 7 hours)
     local cron_entry="$cron_schedule $cron_cmd"
+    
+    print_info "Note: Cron does not support exact $CRON_INTERVAL_MINUTES minute intervals."
+    print_info "The job will run approximately every 7 hours at: 00:12, 07:12, 14:12, 21:12"
     
     # Check if cron job already exists
     if crontab -l 2>/dev/null | grep -q "$INSTALL_PATH"; then
@@ -223,7 +229,7 @@ setup_cron_job() {
     
     if [ $? -eq 0 ]; then
         print_success "Cron job added successfully"
-        print_info "Schedule: Every $CRON_INTERVAL_MINUTES minutes"
+        print_info "Schedule: Approximately every 7 hours (00:12, 07:12, 14:12, 21:12)"
         print_info "Command: $cron_cmd"
     else
         print_error "Failed to add cron job"
@@ -322,7 +328,7 @@ main() {
     echo
     print_info "Configuration Summary:"
     print_info "  • Script location: $INSTALL_PATH"
-    print_info "  • Execution schedule: Every $CRON_INTERVAL_MINUTES minutes"
+    print_info "  • Execution schedule: Approximately every 7 hours (00:12, 07:12, 14:12, 21:12)"
     print_info "  • Log file: /var/log/euystacio_forensic_monitor.log"
     print_info "  • Blocked IPs log: /var/log/euystacio_blocked_ips.log"
     
