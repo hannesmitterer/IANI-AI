@@ -1,0 +1,33 @@
+{
+  "name": "Resonance Validation Certificate",
+  "description": "NFT di Validazione Intellettuale per il Repository Resonance AI",
+  "image": "ipfs://QmPlaceholder_ImageCID_ToBeReplaced",
+  "external_url": "ipns://resonance-project",
+  "attributes": [
+    {
+      "trait_type": "Author",
+      "value": "Hannes Mitterer"
+    },
+    {
+      "trait_type": "Repository",
+      "value": "https://github.com/hannesmitterer/IANI-AI"
+    },
+    {
+      "trait_type": "Root CID",
+      "value": "QmResonanceHannesMitterer2026..."
+    },
+    {
+      "trait_type": "Protocol",
+      "value": "Peace Protocols v1.1"
+    },
+    {
+      "trait_type": "Validation",
+      "value": "Triple-Signature Anchor"
+    },
+    {
+      "trait_type": "Timestamp",
+      "value": 1770135145,
+      "display_type": "date"
+    }
+  ]
+}
