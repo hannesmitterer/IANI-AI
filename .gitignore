@@ -1,0 +1,42 @@
+# Temporary files
+*.tmp
+*.log
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+*.o
+*.exe
+*.out
+
+# Dependency directories
+node_modules/
+vendor/
+.venv/
+venv/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IPFS cache
+.ipfs/
+ipfs_cache/
+
+# Test artifacts
+coverage/
+.coverage
+htmlcov/
+*.cover
+
+# Documentation build
+docs/_build/
+site/
