@@ -1,0 +1,40 @@
+# IPFS Upload Information
+
+## Metadata File
+- **File**: resonance_validation_certificate.json
+- **Generated**: 2026-02-03T16:12:25
+- **Timestamp**: 1770135145
+
+## IPFS Upload Status
+Status: PENDING UPLOAD
+
+## Instructions
+
+To upload this metadata to IPFS:
+
+1. Choose one of the upload methods from the README.md
+2. Upload the file `resonance_validation_certificate.json`
+3. Copy the CID (Content Identifier) returned
+4. Update this file with the CID information
+
+## After Upload
+
+Once uploaded, update this file with:
+
+```
+CID: [Your IPFS CID here]
+IPFS URL: ipfs://[Your CID]
+HTTP Gateway: https://ipfs.io/ipfs/[Your CID]
+```
+
+## Example IPFS URLs
+
+After upload, your metadata will be accessible at:
+- IPFS Protocol: ipfs://[CID]
+- IPFS.io Gateway: https://ipfs.io/ipfs/[CID]
+- Pinata Gateway: https://gateway.pinata.cloud/ipfs/[CID]
+- Cloudflare Gateway: https://cloudflare-ipfs.com/ipfs/[CID]
+
+## Verification
+
+To verify your upload worked correctly, visit any of the HTTP gateway URLs above (after replacing [CID] with your actual CID). You should see the JSON metadata displayed in your browser.
