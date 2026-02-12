@@ -12,6 +12,9 @@ env:
   RESONANCE_FREQUENCY: "0.0043"
   GOLDEN_RATIO: "1.618033"
 
+permissions:
+  contents: read
+
 jobs:
   nsr-validation:
     name: NSR Compliance Check

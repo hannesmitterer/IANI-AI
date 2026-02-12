@@ -20,6 +20,9 @@ env:
   KLIMABAUM_NODES: "Yambio,Svalbard,Lantana"
   DEPLOYMENT_MODE: "zero-downtime"
 
+permissions:
+  contents: read
+
 jobs:
   pre-deployment-validation:
     name: Pre-Deployment Validation
