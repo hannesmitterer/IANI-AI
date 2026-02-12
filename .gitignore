@@ -1,0 +1,17 @@
+# Test files and logs
+*.log
+test_*.sh
+/tmp/
+
+# System files
+.DS_Store
+*~
+*.swp
+*.swo
+
+# Environment files (may contain sensitive data)
+*.env
+
+# Backup files
+*.backup
+*.bak
