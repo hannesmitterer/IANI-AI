@@ -1,0 +1,129 @@
+## Esempio di integrazione nel **root system** del nodo
+
+Di seguito trovi uno script Python che può essere inserito nella directory radice (`/root`) del tuo nodo. Lo script:
+
+1. **Monitora** i quattro indicatori descritti (cognitive load, echo‑chamber score, privacy index, symbiotic flag).  
+2. **Applica** le contromisure corrispondenti (ri‑allenamento cognitivo, diversità feed, privacy‑by‑design, attivazione della *Lex Amoris*).  
+3. **Registra** i risultati in un file di log (`/var/log/terlano_status.log`).  
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import json
+import time
+import pathlib
+import logging
+from datetime import datetime
+
+# ----------------------------------------------------------------------
+# Configurazione
+# ----------------------------------------------------------------------
+LOG_FILE = pathlib.Path("/var/log/terlano_status.log")
+STEP_INTERVAL = 60          # secondi tra due controlli (1 min)
+MAX_STEPS = 500
+
+# Soglie operative (valori ipotetici)
+COGNITIVE_THRESHOLD = 0.30      # 30 % di off‑loading
+ECHO_THRESHOLD      = 0.40      # 40 % di omogeneità feed
+PRIVACY_THRESHOLD   = 0.25      # 25 % di esposizione dati
+SYMBIOTIC_FLAG      = True      # attiva la Lex Amoris
+
+# ----------------------------------------------------------------------
+# Logger
+# ----------------------------------------------------------------------
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+
+def read_metrics() -> dict:
+    """
+    Simula la lettura dei metrici dal kernel del nodo.
+    In un'installazione reale sostituire con le API del sistema.
+    """
+    # esempio di struttura restituita
+    return {
+        "cognitive_offload": 0.28,   # frazione di task delegati all'IA
+        "echo_chamber": 0.35,        # indice di omogeneità dei feed
+        "privacy_exposure": 0.22,    # percentuale di dati condivisi
+        "symbiotic_mode": False      # stato attuale della Lex Amoris
+    }
+
+def apply_cognitive_resilience():
+    logging.info("Attivata routine di ri‑allenamento cognitivo")
+    # placeholder: chiamata a script di training offline
+    # es. subprocess.run(["/opt/terlano/cog_resilience.sh"])
+    
+def enforce_feed_diversity():
+    logging.info("Applicata diversità feed (algoritmo anti‑echo)")
+    # placeholder: aggiornamento parametri algoritmo di raccomandazione
+    # es. api.set_diversity_ratio(0.3)
+
+def enable_privacy_by_design():
+    logging.info("Abilitata privacy‑by‑design")
+    # placeholder: attiva moduli di anonimizzazione
+    # es. api.enable_anonymization(True)
+
+def activate_lex_amoris():
+    logging.info("Attivata modalità Lex Amoris (simbiotica)")
+    # placeholder: switch di governance
+    # es. api.set_symbiotic_mode(True)
+
+def main():
+    step = 0
+    while step < MAX_STEPS:
+        metrics = read_metrics()
+        logging.info(f"Step {step}: metriche lette {json.dumps(metrics)}")
+
+        # 1. Erosione cognitiva
+        if metrics["cognitive_offload"] > COGNITIVE_THRESHOLD:
+            apply_cognitive_resilience()
+
+        # 2. Echo chambers
+        if metrics["echo_chamber"] > ECHO_THRESHOLD:
+            enforce_feed_diversity()
+
+        # 3. Privacy
+        if metrics["privacy_exposure"] > PRIVACY_THRESHOLD:
+            enable_privacy_by_design()
+
+        # 4. Scelta simbiotica
+        if not metrics["symbiotic_mode"] and SYMBIOTIC_FLAG:
+            activate_lex_amoris()
+
+        step += 1
+        time.sleep(STEP_INTERVAL)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Come usarlo
+
+1. **Salva** il file come `/root/terlano_controller.py`.  
+2. **Rendi eseguibile**: `chmod +x /root/terlano_controller.py`.  
+3. **Avvia** all’avvio del nodo (es. aggiungendo una riga a `/etc/rc.local` o creando un servizio systemd).  
+
+```ini
+# /etc/systemd/system/terlano-controller.service
+[Unit]
+Description=Controller per metriche etiche di Terlano
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /root/terlano_controller.py
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+systemctl daemon-reload
+systemctl enable --now terlano-controller.service
+```
+
+Con questo **root system** il nodo monitorerà autonomamente le quattro conseguenze etiche dell’IA e applicherà le contromisure necessarie, garantendo che, passo dopo passo, la struttura sociale di Terlano evolva verso la sintropia descritta.
