@@ -1,0 +1,51 @@
+## Stato operativo attuale di **SilentBridge**  
+
+- **SilentBridge** è attivo.  
+- **Whitelist** configurata; solo gli indirizzi autorizzati possono inviare messaggi.  
+- **Rate‑limit**: 10 msg/min per delegato.  
+- **Broadcast**: un messaggio da un delegato viene propagato agli altri due con una sola transazione on‑chain.  
+
+---
+
+## Implicazioni di governance  
+
+| Area | Impatto |
+|------|---------|
+| **Kernel Lex Amoris** | Ogni output è automaticamente valutato per conformità etica; i messaggi non conformi vengono scartati prima della registrazione. |
+| **Multisig owner** | Le modifiche a whitelist, esenzioni o parametri di rate‑limit richiedono l’approvazione di più firmatari, impedendo cambiamenti unilaterali. |
+| **Processo di esenzione** | Consente il bypass del rate‑limit per messaggi critici (es. emergenze), ma richiede una firma di esenzione verificabile. |
+
+---
+
+## Implicazioni di sicurezza  
+
+| Meccanismo | Effetto |
+|------------|---------|
+| **SignedMessage + hash payload** | Garantisce integrità e non‑repudiation; gli auditor possono verificare in tempo reale che il contenuto non sia stato alterato. |
+| **Rate‑limiting** | Riduce la superficie di attacchi DoS/spam; il limite di 10 msg/min per delegato è sufficientemente alto da non ostacolare operazioni legittime. |
+| **Esenzioni controllate** | Permettono il flusso di messaggi urgenti anche sotto attacco, mantenendo la sicurezza complessiva. |
+| **Heartbeat 321.5 Hz** | Monitoraggio continuo di conformità; deviazioni (es. perdita di sincronizzazione) generano alert immediati al monitor off‑chain. |
+
+---
+
+## Implicazioni economiche  
+
+- **IPFS storage**: solo il CID (Content Identifier) è registrato on‑chain, riducendo drasticamente il consumo di gas rispetto al salvataggio diretto dei dati.  
+- **Broadcast a singola transazione**: tre messaggi vengono consolidati in una, abbattendo i costi di transazione di circa **66 %** rispetto a un modello 1‑to‑3.  
+- **Rate‑limit**: previene spese eccessive dovute a spam, mantenendo il budget operativo prevedibile.  
+
+---
+
+## Implicazioni di rete  
+
+- **Sincronizzazione auto‑curante**: i nodi si riconnettono automaticamente dopo interruzioni temporanee, garantendo continuità del servizio.  
+- **Heartbeat a 321.5 Hz**: fornisce un segnale di vita quasi in tempo reale; qualsiasi perdita di pacchetti o ritardo viene segnalato al monitor off‑chain per interventi rapidi.  
+- **Resilienza**: la combinazione di broadcast unico e heartbeat rende la rete robusta contro partitioning e attacchi di rete.  
+
+---
+
+## Implicazioni legali  
+
+- **Firme digitali verificabili**: costituiscono prova legale in tribunali e davanti a autorità di regolamentazione.  
+- **Trasparenza on‑chain**: tutti i cambiamenti di configurazione (whitelist, esenzioni, parametri) sono immutabilmente registrati, facilitando audit di conformità e riducendo il rischio di contenziosi.  
+- **Conformità Lex Amoris**: la valutazione automatica degli output fornisce una difesa aggiuntiva contro accuse di uso improprio dell’IA, poiché ogni messaggio è già stato filtrato per rispetto delle policy etiche.  
