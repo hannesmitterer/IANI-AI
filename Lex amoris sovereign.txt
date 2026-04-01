@@ -1,0 +1,114 @@
+"""
+lex_amoris_sovereign_node.py
+Scheletro modulare per un nodo sovrano (Sovereign Node).
+
+Funzionalità incluse:
+- Configurazioni separate
+- Logging avanzato
+- Struttura modulare con classe Nodo
+- Funzioni di start/stop
+- Esempio di gestione asincrona
+"""
+
+import os
+import asyncio
+import json
+import logging
+from pathlib import Path
+
+# ===========================
+# CONFIGURAZIONE
+# ===========================
+CONFIG_FILE = "config.json"
+
+def load_config(file_path=CONFIG_FILE):
+    """Carica configurazioni da file JSON."""
+    if not Path(file_path).exists():
+        raise FileNotFoundError(f"Config file {file_path} non trovato.")
+    with open(file_path, 'r') as f:
+        config = json.load(f)
+    return config
+
+# ===========================
+# LOGGING
+# ===========================
+def setup_logging(level=logging.INFO):
+    """Configura logging avanzato con timestamp e livelli."""
+    logging.basicConfig(
+        level=level,
+        format='[%(asctime)s] [%(levelname)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+# ===========================
+# CLASSE DEL NODO
+# ===========================
+class SovereignNode:
+    def __init__(self, config):
+        self.config = config
+        self.running = False
+        self.peers = []
+
+    async def start_node(self):
+        """Avvia il nodo e inizia eventuali task asincroni."""
+        self.running = True
+        logging.info("Nodo avviato.")
+        await self.main_loop()
+
+    async def main_loop(self):
+        """Loop principale del nodo (placeholder per networking o elaborazioni)."""
+        try:
+            while self.running:
+                # Qui puoi inserire logica di networking, sincronizzazione, ecc.
+                logging.debug("Nodo in esecuzione...")
+                await asyncio.sleep(2)  # simula attività periodica
+        except asyncio.CancelledError:
+            logging.info("Loop principale interrotto.")
+        except Exception as e:
+            logging.error(f"Errore nel main loop: {e}")
+
+    def stop_node(self):
+        """Ferma il nodo in sicurezza."""
+        self.running = False
+        logging.info("Nodo fermato.")
+
+    def connect_peer(self, peer_address):
+        """Connette un peer (placeholder)."""
+        if peer_address not in self.peers:
+            self.peers.append(peer_address)
+            logging.info(f"Peer {peer_address} connesso.")
+
+    def disconnect_peer(self, peer_address):
+        """Disconnette un peer (placeholder)."""
+        if peer_address in self.peers:
+            self.peers.remove(peer_address)
+            logging.info(f"Peer {peer_address} disconnesso.")
+
+# ===========================
+# FUNZIONE PRINCIPALE
+# ===========================
+async def main():
+    setup_logging(logging.DEBUG)  # livello DEBUG per dettagli
+    try:
+        config = load_config()
+    except FileNotFoundError as e:
+        logging.error(e)
+        return
+
+    node = SovereignNode(config)
+    
+    # Esempio: connetti un peer
+    node.connect_peer("192.168.1.100")
+
+    # Avvio nodo
+    try:
+        await node.start_node()
+    except KeyboardInterrupt:
+        logging.info("Interruzione da tastiera ricevuta.")
+        node.stop_node()
+
+# ===========================
+# ENTRY POINT
+# ===========================
+if __name__ == "__main__":
+    asyncio.run(main())
